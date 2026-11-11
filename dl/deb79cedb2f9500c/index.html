@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ダウンロード | AI自動収益パイプライン構築キット</title>
+<style>
+  body { font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; background:#0f1220; color:#eef0f6; margin:0; display:flex; min-height:100vh; align-items:center; justify-content:center; }
+  .card { max-width:520px; width:92%; background:#171b2e; border:1px solid #262c48; border-radius:16px; padding:32px 28px; text-align:center; }
+  h1 { font-size:20px; margin:0 0 8px; }
+  p { color:#aab1c8; font-size:14px; line-height:1.7; }
+  button { background:#5b6cff; color:#fff; border:none; border-radius:10px; padding:14px 28px; font-size:16px; font-weight:700; cursor:pointer; width:100%; margin-top:12px; }
+  button:disabled { opacity:.5; cursor:default; }
+  #status { margin-top:14px; font-size:13px; color:#8f97b5; min-height:20px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>AI自動収益パイプライン構築キット</h1>
+  <p>ご購入ありがとうございます。<br>下のボタンから教材PDF（全13ページ）をダウンロードしてください。</p>
+  <button id="btn" onclick="downloadKit()">PDFをダウンロード</button>
+  <div id="status"></div>
+  <p style="font-size:12px;">ダウンロードできない場合は、販売者までご連絡ください。<br>このURLは購入者様限りでお願いします。</p>
+</div>
+<script>
+var PARTS = 7;
+var FILENAME = "AIに働かせる_アフィリエイト自動化_実践キット.pdf";
+async function downloadKit() {
+  var btn = document.getElementById('btn');
+  var status = document.getElementById('status');
+  btn.disabled = true;
+  try {
+    var b64 = "";
+    for (var i = 0; i < PARTS; i++) {
+      status.textContent = "読み込み中… " + (i + 1) + " / " + PARTS;
+      var res = await fetch("kit-" + i + ".b64", {cache: "no-store"});
+      if (!res.ok) throw new Error("part " + i);
+      b64 += (await res.text()).trim();
+    }
+    status.textContent = "ファイルを作成中…";
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var j = 0; j < bin.length; j++) bytes[j] = bin.charCodeAt(j);
+    var blob = new Blob([bytes], {type: "application/pdf"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = FILENAME;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+    status.textContent = "ダウンロードを開始しました。";
+  } catch (e) {
+    status.textContent = "読み込みに失敗しました。通信環境を確認して、もう一度お試しください。";
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
